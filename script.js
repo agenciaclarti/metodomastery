@@ -3,7 +3,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const WHATSAPP_NUMBER = "";
   const whatsappLink = document.querySelector("[data-whatsapp-link]");
   const header = document.querySelector("[data-header]");
+  const menuToggle = document.querySelector("[data-menu-toggle]");
+  const mobileNav = document.querySelector("#mobile-nav");
   const year = document.querySelector("[data-year]");
+
+  if (header && menuToggle && mobileNav) {
+    const setMenuOpen = (open) => {
+      mobileNav.hidden = !open;
+      menuToggle.setAttribute("aria-expanded", String(open));
+      menuToggle.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu");
+      header.classList.toggle("is-menu-open", open);
+    };
+
+    menuToggle.addEventListener("click", () => {
+      setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+    });
+    mobileNav.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+    header.querySelector(".brand")?.addEventListener("click", () => setMenuOpen(false));
+    document.addEventListener("pointerdown", (event) => {
+      if (!mobileNav.hidden && !header.contains(event.target)) setMenuOpen(false);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !mobileNav.hidden) {
+        setMenuOpen(false);
+        menuToggle.focus();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 700 && !mobileNav.hidden) setMenuOpen(false);
+    });
+  }
 
   if (whatsappLink && WHATSAPP_NUMBER) {
     const message = "Olá! Quero saber mais sobre o Método Mastery para minha equipe.";
